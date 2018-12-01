@@ -114,9 +114,19 @@ function update() {
         context.paddelX -= 10.0
     }
 
+    // move paddle 2 up
+    if (isDown() && context.paddelX > (((gl.drawingBufferWidth / 2) - 20)* -1)) {
+        context.paddelX -= 10.0
+    }
+
     // move paddle 2 down
     if (isDown(key.RIGHT) && context.paddelX < ((gl.drawingBufferWidth / 2) - 20)) {
         context.paddelX += 10.0
+    }
+
+    if (isDown(key.SPACE)) {
+        context.ball = [0, 0]
+        context.ballSpeed = [6, 6]
     }
 
     // bounce top
@@ -177,7 +187,7 @@ function drawBall() {
 // Key Handling
 var key = {
     _pressed: {},
-
+    SPACE: 32,
     LEFT: 37,
     UP: 38,
     RIGHT: 39,
