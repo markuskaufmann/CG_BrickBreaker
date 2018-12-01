@@ -99,37 +99,24 @@ function draw() {
     gl.vertexAttribPointer(ctx.aVertexPositionId, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(ctx.aVertexPositionId);
 
-    drawCenterLine();
-    drawPaddel1();
-    drawPaddel2();
+    drawPaddel();
     drawBall();
 }
 var context = {
-    paddelY: 0,
-    paddel2Y: 0,
+    paddelX: 0,
     ball: [0, 0],
-    ballSpeed: [4, 4]
+    ballSpeed: [6, 6]
 };
 
 function update() {
-    // move paddle up
-    if (isDown(key.UP) && context.paddelY < (gl.drawingBufferHeight / 2) - 50) {
-        context.paddelY += 10.0
-    }
-
-    // move paddle down
-    if (isDown(key.DOWN) && context.paddelY > ((gl.drawingBufferHeight / 2) - 50) * -1) {
-        context.paddelY -= 10.0
-    }
-
     // move paddle 2 up
-    if (isDown(key.LEFT) && context.paddel2Y < (gl.drawingBufferHeight / 2) - 50) {
-        context.paddel2Y += 10.0
+    if (isDown(key.LEFT) && context.paddelX > (((gl.drawingBufferWidth / 2) - 20)* -1)) {
+        context.paddelX -= 10.0
     }
 
     // move paddle 2 down
-    if (isDown(key.RIGHT) && context.paddel2Y > ((gl.drawingBufferHeight / 2) - 50) * -1) {
-        context.paddel2Y -= 10.0
+    if (isDown(key.RIGHT) && context.paddelX < ((gl.drawingBufferWidth / 2) - 20)) {
+        context.paddelX += 10.0
     }
 
     // bounce top
@@ -139,29 +126,23 @@ function update() {
     
     // bounce bottom
     if (context.ball[1] < -1 * ((gl.drawingBufferHeight / 2) - 5)) {
-        context.ballSpeed[1] = context.ballSpeed[1] * -1;
+        context.ballSpeed = [0, 0]
     }
 
     // right out of field
     if (context.ball[0] < -1 * ((gl.drawingBufferWidth / 2) - 5)) {
-        context.ballSpeed = [0, 0];
+        context.ballSpeed[0] = context.ballSpeed[0] * -1;
     }
 
     // left out of field
     if (context.ball[0] > ((gl.drawingBufferWidth / 2) - 5)) {
-        context.ballSpeed = [0, 0];
+        context.ballSpeed[0] = context.ballSpeed[0] * -1;
     }
     
-    var xpos = (gl.drawingBufferWidth / 2.0) - 20;
-    if (context.ball[0] > xpos - 5 && context.ball[0] < xpos + 5
-        && context.ball[1] > context.paddelY - 50 && context.ball[1] < context.paddelY + 50) {
-        context.ballSpeed[0] = context.ballSpeed[0] * -1;
-    }
-
-    xpos = -1 * ((gl.drawingBufferWidth / 2.0) - 20);
-    if (context.ball[0] > xpos - 5 && context.ball[0] < xpos + 5
-        && context.ball[1] > context.paddel2Y - 50 && context.ball[1] < context.paddel2Y + 50) {
-        context.ballSpeed[0] = context.ballSpeed[0] * -1;
+    var ypos = ((gl.drawingBufferHeight /2) - 20) * -1;
+    if (context.ball[1] > ypos - 5 && context.ball[1] < ypos + 5
+        && context.ball[0] > context.paddelX - 50 && context.ball[0] < context.paddelX + 50) {
+        context.ballSpeed[1] = context.ballSpeed[1] * -1;
     }
 
     // move ball
@@ -176,29 +157,12 @@ function drawRectangle(modelMatCallback) {
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
 
-function drawCenterLine() {
-    drawRectangle(function (modelMat) {
-        return mat3.scale(modelMat, modelMat, [3.0, gl.drawingBufferHeight]);
-    });
-}
-
-
-function drawPaddel1() {
+function drawPaddel() {
     let vm = this;
     drawRectangle(function (modelMat) {
-        var xpos = (gl.drawingBufferWidth / 2.0) - 20;
-        mat3.translate(modelMat, modelMat, [xpos, vm.context.paddelY]);
-        return mat3.scale(modelMat, modelMat, [10.0, 100.0]);
-    });
-}
-
-
-function drawPaddel2() {
-    let vm = this;
-    drawRectangle(function (modelMat) {
-        var xpos = (gl.drawingBufferWidth / 2.0) - 20;
-        mat3.translate(modelMat, modelMat, [xpos * -1, vm.context.paddel2Y]);
-        return mat3.scale(modelMat, modelMat, [10.0, 100.0]);
+        var ypos = ((gl.drawingBufferHeight /2) - 20) * -1;
+        mat3.translate(modelMat, modelMat, [vm.context.paddelX, ypos]);
+        return mat3.scale(modelMat, modelMat, [100.0, 10.0]);
     });
 }
 
