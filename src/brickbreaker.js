@@ -97,10 +97,12 @@ function draw() {
 var context = {
     init: true,
     paddelX: 0,
+    paddelYMargin: 20,
     paddelSize: [100.0, 10.0],
     paddelCol: [1, 1, 1],
     ball: [0, 0],
     ballSpeed: [6, 6],
+    ballSpeedInit: [6, 6],
     ballSize: [10.0, 10.0],
     ballCol: [1, 0, 0],
     brickHeight: 20,
@@ -108,19 +110,28 @@ var context = {
     brickMaxWidth: 150,
     brickLayers: 5,
     brickCols: [[0.83, 0.83, 0.83], [0, 1, 0], [1, 0, 0], [0, 0, 1]],
-    brickSpeed: 0,
+    brickSpeed: 0, // set to > 0 to move the bricks
     brickDirection: 1, // -1 = left, 1 = right
     bricks: []
 };
 
 function update() {
+    let bufferWidthHalf = gl.drawingBufferWidth / 2;
+    let bufferHeightHalf = gl.drawingBufferHeight / 2;
+    let xPosBall = context.ball[0];
+    let yPosBall = context.ball[1];
+    let xMarginBall = context.ballSize[0] / 2;
+    let yMarginBall = context.ballSize[1] / 2;
+    let xPosPaddel = context.paddelX;
+    let xPaddelSizeHalf = context.paddelSize[0] / 2;
+
     // move paddel left
-    if (isDown(key.LEFT) && context.paddelX > (((gl.drawingBufferWidth / 2) - 50) * -1)) {
+    if (isDown(key.LEFT) && xPosPaddel > ((bufferWidthHalf - xPaddelSizeHalf) * -1)) {
         context.paddelX -= 10.0
     }
 
     // move paddel right
-    if (isDown(key.RIGHT) && context.paddelX < ((gl.drawingBufferWidth / 2) - 50)) {
+    if (isDown(key.RIGHT) && xPosPaddel < (bufferWidthHalf - xPaddelSizeHalf)) {
         context.paddelX += 10.0
     }
 
@@ -130,31 +141,81 @@ function update() {
     }
 
     // bounce top
-    if (context.ball[1] > ((gl.drawingBufferHeight / 2) - 5)) {
+    if (yPosBall > (bufferHeightHalf - yMarginBall)) {
         context.ballSpeed[1] = context.ballSpeed[1] * -1;
     }
 
     // ball touched bottom -> game over
-    if (context.ball[1] < -1 * ((gl.drawingBufferHeight / 2) - 5)) {
+    if (yPosBall < -1 * (bufferHeightHalf - yMarginBall)) {
         context.ballSpeed = [0, 0]
     }
 
-    // right out of field
-    if (context.ball[0] < -1 * ((gl.drawingBufferWidth / 2) - 5)) {
+    // bounce left
+    if (xPosBall < -1 * (bufferWidthHalf - xMarginBall)) {
         context.ballSpeed[0] = context.ballSpeed[0] * -1;
     }
 
-    // left out of field
-    if (context.ball[0] > ((gl.drawingBufferWidth / 2) - 5)) {
+    // bounce right
+    if (xPosBall > (bufferWidthHalf - xMarginBall)) {
         context.ballSpeed[0] = context.ballSpeed[0] * -1;
     }
 
-    var ypos = ((gl.drawingBufferHeight / 2) - 25) * -1;
-    if (!context.init && context.ball[1] > ypos - 5 && context.ball[1] < ypos + 5
-        && context.ball[0] > context.paddelX - 50 && context.ball[0] < context.paddelX + 50) {
+    // collision detection: paddel
+    let yPosPaddel = (bufferHeightHalf - (context.paddelYMargin + yMarginBall)) * -1;
+    if (!context.init
+        && yPosBall > (yPosPaddel - yMarginBall) && yPosBall < (yPosPaddel + yMarginBall)
+        && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
         context.ballSpeed[1] = context.ballSpeed[1] * -1;
     }
 
+    // collision detection: bricks
+    let idxToRemove = -1;
+    for(let idxBrick = 0; idxBrick < context.bricks.length; idxBrick++) {
+        let brick = context.bricks[idxBrick];
+        let brickWidth = brick[1];
+        let xBrickLeft = brick[0] - (brickWidth / 2);
+        let xBrickRight = brick[0] + (brickWidth / 2);
+        let yBrickUpper = brick[2];
+        let yBrickLower = yBrickUpper + context.brickHeight;
+
+        // collision top
+        if (yPosBall < (yBrickUpper + yMarginBall) && yPosBall > (yBrickUpper - yMarginBall)
+            && xPosBall > xBrickLeft && xPosBall < xBrickRight) {
+            context.ballSpeed[1] = context.ballSpeed[1] * -1;
+            idxToRemove = idxBrick;
+            break;
+        }
+
+        // collision bottom
+        if (yPosBall < (yBrickLower + yMarginBall) && yPosBall > (yBrickLower - yMarginBall)
+            && xPosBall > xBrickLeft && xPosBall < xBrickRight) {
+            context.ballSpeed[1] = context.ballSpeed[1] * -1;
+            idxToRemove = idxBrick;
+            break;
+        }
+
+        // collision left
+        if (xPosBall > (xBrickLeft - xMarginBall) && xPosBall < (xBrickLeft + xMarginBall)
+            && yPosBall > yBrickLower && yPosBall < yBrickUpper) {
+            context.ballSpeed[0] = context.ballSpeed[0] * -1;
+            idxToRemove = idxBrick;
+            break;
+        }
+
+        // collision right
+        if (xPosBall < (xBrickRight + xMarginBall) && xPosBall > (xBrickRight - xMarginBall)
+            && yPosBall > yBrickLower && yPosBall < yBrickUpper) {
+            context.ballSpeed[0] = context.ballSpeed[0] * -1;
+            idxToRemove = idxBrick;
+            break;
+        }
+    }
+
+    if(idxToRemove !== -1) {
+        context.bricks.splice(idxToRemove, 1);
+    }
+
+    // initial update done
     context.init = false;
 
     // move ball
@@ -172,7 +233,7 @@ function drawRectangle(modelMatCallback, rgb) {
 function drawPaddel() {
     let vm = this;
     drawRectangle(function (modelMat) {
-        var ypos = ((gl.drawingBufferHeight / 2) - 20) * -1;
+        var ypos = ((gl.drawingBufferHeight / 2) - context.paddelYMargin) * -1;
         mat3.translate(modelMat, modelMat, [vm.context.paddelX, ypos]);
         return mat3.scale(modelMat, modelMat, vm.context.paddelSize);
     }, context.paddelCol);
@@ -221,8 +282,8 @@ function setInitialParams() {
     context.paddelX = 0;
     var direction = Math.random() < 0.5 ? -1 : 1;
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
-    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - 25) * -1];
-    context.ballSpeed = [direction * 6, 6];
+    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] / 2)) * -1];
+    context.ballSpeed = [direction * context.ballSpeedInit[0], context.ballSpeedInit[1]];
     context.bricks = [];
 }
 
