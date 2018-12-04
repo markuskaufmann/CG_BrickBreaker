@@ -89,6 +89,7 @@ function draw() {
     gl.bindBuffer(gl.ARRAY_BUFFER, rectangleObject.buffer);
     gl.vertexAttribPointer(ctx.aVertexPositionId, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(ctx.aVertexPositionId);
+    drawBricks();
     drawPaddel();
     drawBall();
 }
@@ -101,7 +102,15 @@ var context = {
     ball: [0, 0],
     ballSpeed: [6, 6],
     ballSize: [10.0, 10.0],
-    ballCol: [1, 0, 0]
+    ballCol: [1, 0, 0],
+    brickHeight: 20,
+    brickMinWidth: 80,
+    brickMaxWidth: 150,
+    brickLayers: 5,
+    brickCols: [[0.83, 0.83, 0.83], [0, 1, 0], [1, 0, 0], [0, 0, 1]],
+    brickSpeed: 0,
+    brickDirection: 1, // -1 = left, 1 = right
+    bricks: []
 };
 
 function update() {
@@ -165,7 +174,7 @@ function drawPaddel() {
     drawRectangle(function (modelMat) {
         var ypos = ((gl.drawingBufferHeight / 2) - 20) * -1;
         mat3.translate(modelMat, modelMat, [vm.context.paddelX, ypos]);
-        return mat3.scale(modelMat, modelMat, context.paddelSize);
+        return mat3.scale(modelMat, modelMat, vm.context.paddelSize);
     }, context.paddelCol);
 }
 
@@ -173,8 +182,38 @@ function drawBall() {
     let vm = this;
     drawRectangle(function (modelMat) {
         mat3.translate(modelMat, modelMat, vm.context.ball);
-        return mat3.scale(modelMat, modelMat, context.ballSize);
+        return mat3.scale(modelMat, modelMat, vm.context.ballSize);
     }, context.ballCol);
+}
+
+function drawBricks() {
+    if(context.bricks.length === 0) {
+        generateRandomBrickLayers();
+    }
+    let brickSpeed = Math.abs(context.brickSpeed);
+    let brickDirection = context.brickDirection;
+    if(brickSpeed > 0 && checkBricksOutsideViewport() === true) {
+        console.log("All bricks out of viewport");
+        for(let idxBrick = 0; idxBrick < context.bricks.length; idxBrick++) {
+            let brick = context.bricks[idxBrick];
+            let brickX = brick[0];
+            brick.splice(0, 1, (brickX + (-2 * brickDirection * gl.drawingBufferWidth + (brickDirection * 15))));
+            drawRectangle(function (modelMat) {
+                mat3.translate(modelMat, modelMat, [brick[0], brick[2]]);
+                return mat3.scale(modelMat, modelMat, [brick[1], context.brickHeight]);
+            }, brick[3]);
+        }
+    } else {
+        for(let idxBrick = 0; idxBrick < context.bricks.length; idxBrick++) {
+            let brick = context.bricks[idxBrick];
+            let brickX = brick[0];
+            brick.splice(0, 1, (brickX + (brickSpeed * brickDirection)));
+            drawRectangle(function (modelMat) {
+                mat3.translate(modelMat, modelMat, [brick[0], brick[2]]);
+                return mat3.scale(modelMat, modelMat, [brick[1], context.brickHeight]);
+            }, brick[3]);
+        }
+    }
 }
 
 function setInitialParams() {
@@ -184,6 +223,53 @@ function setInitialParams() {
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
     context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - 25) * -1];
     context.ballSpeed = [direction * 6, 6];
+    context.bricks = [];
+}
+
+function generateRandomBrickLayers() {
+    var xSpacing = 10;
+    var ySpacing = 5;
+    var xEnd = (gl.drawingBufferWidth / 2) - 5;
+    var yPos = (gl.drawingBufferHeight / 2) - ((context.brickLayers * context.brickHeight) + (context.brickLayers * ySpacing) + 2);
+    for(var i = 0; i < context.brickLayers; i++) {
+        var xStart = ((gl.drawingBufferWidth / 2) * -1) + 5;
+        while(xStart < xEnd) {
+            var brickWidth = (Math.random() * context.brickMaxWidth) + context.brickMinWidth;
+            if((xStart + brickWidth) > xEnd) {
+                brickWidth = xEnd - xStart;
+                if(brickWidth < (context.brickMinWidth / 2)) {
+                    break;
+                }
+            }
+            var x0 = xStart + (brickWidth / 2);
+            var x1 = xStart + brickWidth;
+            var randColor = Math.random();
+            var color = context.brickCols[0]; // most bricks are normal (grey: [0.83, 0.83, 0.83])
+            if(randColor > 0.8) {
+                color = context.brickCols[Math.floor(Math.random() * 3) + 1]; // few bricks are either red, green or blue
+            }
+            var brick = [x0, brickWidth, yPos, color];
+            context.bricks.push(brick);
+            xStart = x1 + xSpacing;
+        }
+        yPos += context.brickHeight + ySpacing;
+    }
+}
+
+function checkBricksOutsideViewport() {
+    let boundary = gl.drawingBufferWidth / 2;
+    for(let idx = 0; idx < context.bricks.length; idx++) {
+        let brick = context.bricks[idx];
+        let brickX = brick[0];
+        let brickWidth = brick[1];
+        let brickLeftBound = brickX - (brickWidth / 2);
+        let brickRightBound = brickX + (brickWidth / 2);
+        if(((boundary * -1) < brickLeftBound && brickLeftBound < boundary)
+                || ((boundary * -1) < brickRightBound && brickRightBound < boundary)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // Key Handling
