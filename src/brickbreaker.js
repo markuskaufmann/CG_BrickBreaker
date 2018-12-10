@@ -112,7 +112,10 @@ var context = {
     brickCols: [[0.83, 0.83, 0.83], [0, 1, 0], [1, 0, 0], [0, 0, 1]],
     brickSpeed: 0, // set to > 0 to move the bricks
     brickDirection: 1, // -1 = left, 1 = right
-    bricks: []
+    bricks: [],
+    score: 0,
+    level: 0,
+
 };
 
 function update() {
@@ -165,11 +168,26 @@ function update() {
     if (!context.init
         && yPosBall > (yPosPaddel - yMarginBall) && yPosBall < (yPosPaddel + yMarginBall)
         && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
+
+        relativePos = ((xPosBall+250)/5 - (xPosPaddel+250)/5) / 10;
+        console.log(relativePos);
+
+
+        /*
+        if(relativePos > 0){
+            context.ballSpeed[1] = context.ballSpeed[1] * - (1+relativePos) ;
+            context.ballSpeed[0] = context.ballSpeed[0] * (1-relativePos);
+        }
+        */
+
+        //y
         context.ballSpeed[1] = context.ballSpeed[1] * -1;
     }
 
     // collision detection: bricks
     let idxToRemove = -1;
+
+
     for(let idxBrick = 0; idxBrick < context.bricks.length; idxBrick++) {
         let brick = context.bricks[idxBrick];
         let brickWidth = brick[1];
@@ -209,10 +227,15 @@ function update() {
             idxToRemove = idxBrick;
             break;
         }
+
+
     }
 
+
     if(idxToRemove !== -1) {
+        context.score += 1;
         context.bricks.splice(idxToRemove, 1);
+        document.getElementById("score").textContent = "Score: " + context.score;
     }
 
     // initial update done
@@ -222,6 +245,15 @@ function update() {
     context.ball[0] += context.ballSpeed[0];
     context.ball[1] += context.ballSpeed[1];
 }
+
+function nextLevel() {
+    context.level += 1;
+    // context.ballSpeed[0] += 2;
+    //context.ballSpeed[1] += 2;
+
+    document.getElementById("level").textContent = "Level: " + context.level;
+}
+
 
 function drawRectangle(modelMatCallback, rgb) {
     var modelMat = modelMatCallback(mat3.create());
@@ -250,6 +282,7 @@ function drawBall() {
 function drawBricks() {
     if(context.bricks.length === 0) {
         generateRandomBrickLayers();
+        nextLevel();
     }
     let brickSpeed = Math.abs(context.brickSpeed);
     let brickDirection = context.brickDirection;
@@ -279,6 +312,10 @@ function drawBricks() {
 
 function setInitialParams() {
     context.init = true;
+    context.score = 0;
+    context.level = 0;
+    document.getElementById("score").textContent = "Score: 0";
+    document.getElementById("level").textContent = "Level: 1";
     context.paddelX = 0;
     var direction = Math.random() < 0.5 ? -1 : 1;
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
