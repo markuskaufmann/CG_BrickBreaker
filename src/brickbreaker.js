@@ -169,19 +169,24 @@ function update() {
         && yPosBall > (yPosPaddel - yMarginBall) && yPosBall < (yPosPaddel + yMarginBall)
         && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
 
-        relativePos = ((xPosBall+250)/5 - (xPosPaddel+250)/5) / 10;
+
+        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
+
+        normalizedSpeed = Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] + context.ballSpeed[0] * context.ballSpeed[0]);
         console.log(relativePos);
+        console.log(normalizedSpeed);
 
 
-        /*
-        if(relativePos > 0){
-            context.ballSpeed[1] = context.ballSpeed[1] * - (1+relativePos) ;
-            context.ballSpeed[0] = context.ballSpeed[0] * (1-relativePos);
+        if(relativePos > 0.5){
+            context.ballSpeed[1] = (context.ballSpeed[1]-1) * - 1;
+            context.ballSpeed[0] = context.ballSpeed[0]+1;
         }
-        */
+        if(relativePos <= 0.5){
+            context.ballSpeed[1] = (context.ballSpeed[1]+1) * - 1;
+            context.ballSpeed[0] = (context.ballSpeed[0]-1);
+        }
 
-        //y
-        context.ballSpeed[1] = context.ballSpeed[1] * -1;
+
     }
 
     // collision detection: bricks
