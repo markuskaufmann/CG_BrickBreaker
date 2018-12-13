@@ -9,9 +9,13 @@ Repository containing all necessary data of the project "BrickBreaker", which is
  
  
 ### Joel
-* colored bricks -> different lives & points, 
+* colored bricks
+** Grey Blocks: normal, break when collision
+** Orange blocks: turn into grey blocks 
+** Red Blocks: turn into Orange Blocks
+** Blue Blocks: Don't get destroyed, makes ball faster
 * moving bricks
-* higher speed on higher levels
+* increase speed after each level
 
 
 ### Cyrille
@@ -22,6 +26,6 @@ Repository containing all necessary data of the project "BrickBreaker", which is
 
 ## Abgaben
 
-* 20. Dezember Projekt-Dateien
+* 20\. Dezember Projekt-Dateien
 
-* 21. Dezember Präsentation
+* 21\. Dezember Präsentation
