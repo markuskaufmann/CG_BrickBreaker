@@ -173,8 +173,8 @@ function update() {
         relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
 
         normalizedSpeed = Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] + context.ballSpeed[0] * context.ballSpeed[0]);
-        console.log(relativePos);
-        console.log(normalizedSpeed);
+        //console.log(relativePos);
+        //console.log(normalizedSpeed);
 
 
         if(relativePos > 0.5){
@@ -189,9 +189,6 @@ function update() {
 
     }
 
-    // collision detection: bricks
-    let idxToRemove = -1;
-
 
     for(let idxBrick = 0; idxBrick < context.bricks.length; idxBrick++) {
         let brick = context.bricks[idxBrick];
@@ -205,7 +202,7 @@ function update() {
         if (yPosBall < (yBrickUpper + yMarginBall) && yPosBall > (yBrickUpper - yMarginBall)
             && xPosBall > xBrickLeft && xPosBall < xBrickRight) {
             context.ballSpeed[1] = context.ballSpeed[1] * -1;
-            idxToRemove = idxBrick;
+            collideBrick(idxBrick);
             break;
         }
 
@@ -213,7 +210,7 @@ function update() {
         if (yPosBall < (yBrickLower + yMarginBall) && yPosBall > (yBrickLower - yMarginBall)
             && xPosBall > xBrickLeft && xPosBall < xBrickRight) {
             context.ballSpeed[1] = context.ballSpeed[1] * -1;
-            idxToRemove = idxBrick;
+            collideBrick(idxBrick);
             break;
         }
 
@@ -221,7 +218,7 @@ function update() {
         if (xPosBall > (xBrickLeft - xMarginBall) && xPosBall < (xBrickLeft + xMarginBall)
             && yPosBall > yBrickLower && yPosBall < yBrickUpper) {
             context.ballSpeed[0] = context.ballSpeed[0] * -1;
-            idxToRemove = idxBrick;
+            collideBrick(idxBrick);
             break;
         }
 
@@ -229,33 +226,40 @@ function update() {
         if (xPosBall < (xBrickRight + xMarginBall) && xPosBall > (xBrickRight - xMarginBall)
             && yPosBall > yBrickLower && yPosBall < yBrickUpper) {
             context.ballSpeed[0] = context.ballSpeed[0] * -1;
-            idxToRemove = idxBrick;
+            collideBrick(idxBrick);
             break;
         }
-
-
-    }
-
-
-    if(idxToRemove !== -1) {
-        context.score += 1;
-        context.bricks.splice(idxToRemove, 1);
-        document.getElementById("score").textContent = "Score: " + context.score;
     }
 
     // initial update done
     context.init = false;
 
     // move ball
-    context.ball[0] += context.ballSpeed[0];
-    context.ball[1] += context.ballSpeed[1];
+    context.ball[0] += context.ballSpeed[0] * context.level / 2 * -1;
+    context.ball[1] += context.ballSpeed[1] * context.level / 2 * -1;
+}
+
+function collideBrick(brickId) {
+    currentBrick = context.bricks[brickId]
+    currentBrickColor = currentBrick[3]
+    colorIndex = context.brickCols.indexOf(currentBrickColor)
+    console.log("collided "+brickId+" color "+currentBrick[3])
+    context.score += 1;
+    if(colorIndex > 0) {
+        currentBrick[3] = context.brickCols[colorIndex -1]
+    }
+    else {
+        destroyBrick(brickId)
+    }
+}
+
+function destroyBrick(brickId) {
+    context.bricks.splice(brickId, 1);
+    document.getElementById("score").textContent = "Score: " + context.score;
 }
 
 function nextLevel() {
     context.level += 1;
-    // context.ballSpeed[0] += 2;
-    //context.ballSpeed[1] += 2;
-
     document.getElementById("level").textContent = "Level: " + context.level;
 }
 

@@ -9,13 +9,13 @@ Repository containing all necessary data of the project "BrickBreaker", which is
  
  
 ### Joel
-* colored bricks
+* colored bricks -> done
 ** Grey Blocks: normal, break when collision
 ** Orange blocks: turn into grey blocks 
 ** Red Blocks: turn into Orange Blocks
 ** Blue Blocks: Don't get destroyed, makes ball faster
 * moving bricks
-* increase speed after each level
+* increase speed after each level -> done
 
 
 ### Cyrille
