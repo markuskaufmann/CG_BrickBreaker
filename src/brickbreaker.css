@@ -2,4 +2,9 @@
 #bbcanvas {
     margin: 0 auto;
     display: block;
+
+}
+
+.ui-text{
+    text-align: center;
 }

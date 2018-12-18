@@ -170,22 +170,34 @@ function update() {
         && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
 
 
-/*        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
+        /*
+        //check wo der Ball auf dem Paddel landet (0.5 ist die Mitte)
+        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
+        //check ob der paddel auf der rechten oder der link seite des Paddels landet)
+        if (relativePos >= 0.5) {
+            //check ob ball on links oder von rechts kommt (ist ballSpeed[0] positiv oder negativ?)
+            if (context.ballSpeed[0] > 0) {
+                context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
+                console.log("[0]: " + context.ballSpeed[0]);
+            } else {
+                context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
+                console.log("[0]: " + context.ballSpeed[0]);
+            }
+        } else {
 
-        normalizedSpeed = Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] + context.ballSpeed[0] * context.ballSpeed[0]);
-        //console.log(relativePos);
-        //console.log(normalizedSpeed);
+            if (context.ballSpeed[0] > 0) {
+                context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
+                console.log("[0]: " + context.ballSpeed[0]);
+            } else {
+                context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
+                console.log("[0]: " + context.ballSpeed[0]);
+            }
 
-
-        if(relativePos > 0.5){
-            context.ballSpeed[1] = (context.ballSpeed[1]-1) * - 1;
-            context.ballSpeed[0] = context.ballSpeed[0]+1;
         }
-        if(relativePos <= 0.5){
-            context.ballSpeed[1] = (context.ballSpeed[1]+1) * - 1;
-            context.ballSpeed[0] = (context.ballSpeed[0]-1);
-        }
-*/
+        //berechne ballspeed[1] so das die absolute geschwindigkeit gleich bleibt
+        context.ballSpeed[1] = Math.abs(Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
+        */
+
         context.ballSpeed[1] = context.ballSpeed[1] * -1;
 
     }
@@ -329,7 +341,7 @@ function setInitialParams() {
     context.paddelX = 0;
     var direction = Math.random() < 0.5 ? -1 : 1;
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
-    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 1 / 2)) * -1];
+    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 10 / 2)) * -1];
     context.ballSpeed = [direction * context.ballSpeedInit[0], context.ballSpeedInit[1]];
     context.bricks = [];
 }
