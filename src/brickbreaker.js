@@ -170,7 +170,7 @@ function update() {
         && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
 
 
-        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
+/*        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
 
         normalizedSpeed = Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] + context.ballSpeed[0] * context.ballSpeed[0]);
         //console.log(relativePos);
@@ -185,7 +185,8 @@ function update() {
             context.ballSpeed[1] = (context.ballSpeed[1]+1) * - 1;
             context.ballSpeed[0] = (context.ballSpeed[0]-1);
         }
-
+*/
+        context.ballSpeed[1] = context.ballSpeed[1] * -1;
 
     }
 
