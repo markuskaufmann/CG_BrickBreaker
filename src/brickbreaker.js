@@ -329,7 +329,7 @@ function setInitialParams() {
     context.paddelX = 0;
     var direction = Math.random() < 0.5 ? -1 : 1;
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
-    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] / 2)) * -1];
+    context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 1 / 2)) * -1];
     context.ballSpeed = [direction * context.ballSpeedInit[0], context.ballSpeedInit[1]];
     context.bricks = [];
 }
