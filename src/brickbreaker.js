@@ -163,43 +163,44 @@ function update() {
         context.ballSpeed[0] = context.ballSpeed[0] * -1;
     }
 
+    if(context.ballSpeed[1] > 0){
     // collision detection: paddel
-    let yPosPaddel = (bufferHeightHalf - (context.paddelYMargin + yMarginBall)) * -1;
-    if (!context.init
-        && yPosBall > (yPosPaddel - yMarginBall) && yPosBall < (yPosPaddel + yMarginBall)
-        && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
+        let yPosPaddel = (bufferHeightHalf - (context.paddelYMargin + yMarginBall)) * -1;
+        if (!context.init
+            && yPosBall > (yPosPaddel - yMarginBall) && yPosBall < (yPosPaddel + yMarginBall)
+            && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
 
 
-        /*
-        //check wo der Ball auf dem Paddel landet (0.5 ist die Mitte)
-        relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
-        //check ob der paddel auf der rechten oder der link seite des Paddels landet)
-        if (relativePos >= 0.5) {
-            //check ob ball on links oder von rechts kommt (ist ballSpeed[0] positiv oder negativ?)
-            if (context.ballSpeed[0] > 0) {
-                context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
-                console.log("[0]: " + context.ballSpeed[0]);
+            /*
+            //check wo der Ball auf dem Paddel landet (0.5 ist die Mitte)
+            relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
+            //check ob der paddel auf der rechten oder der link seite des Paddels landet)
+            if (relativePos >= 0.5) {
+                //check ob ball on links oder von rechts kommt (ist ballSpeed[0] positiv oder negativ?)
+                if (context.ballSpeed[0] > 0) {
+                    context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
+                    console.log("[0]: " + context.ballSpeed[0]);
+                } else {
+                    context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
+                    console.log("[0]: " + context.ballSpeed[0]);
+                }
             } else {
-                context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
-                console.log("[0]: " + context.ballSpeed[0]);
+
+                if (context.ballSpeed[0] > 0) {
+                    context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
+                    console.log("[0]: " + context.ballSpeed[0]);
+                } else {
+                    context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
+                    console.log("[0]: " + context.ballSpeed[0]);
+                }
+
             }
-        } else {
+            //berechne ballspeed[1] so das die absolute geschwindigkeit gleich bleibt
+            context.ballSpeed[1] = Math.abs(Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
+            */
 
-            if (context.ballSpeed[0] > 0) {
-                context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
-                console.log("[0]: " + context.ballSpeed[0]);
-            } else {
-                context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
-                console.log("[0]: " + context.ballSpeed[0]);
-            }
-
-        }
-        //berechne ballspeed[1] so das die absolute geschwindigkeit gleich bleibt
-        context.ballSpeed[1] = Math.abs(Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
-        */
-
-        context.ballSpeed[1] = context.ballSpeed[1] * -1;
-
+            context.ballSpeed[1] = context.ballSpeed[1] * -1;
+    }
     }
 
 
