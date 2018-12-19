@@ -1,10 +1,14 @@
 
-#bbcanvas {
+#canvasdiv {
     margin: 0 auto;
-    display: block;
+    width: 600px;
+}
 
+#bbcanvas{
+    float: left;
+    display: inline-block;
 }
 
 .ui-text{
-    text-align: center;
+    float: right;
 }
