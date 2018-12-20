@@ -102,7 +102,7 @@ var context = {
     paddelCol: [1, 1, 1],
     ball: [0, 0],
     ballSpeed: [6, 6],
-    ballSpeedInit: [6, 6],
+    ballSpeedInit: [5, 5],
     ballSize: [10.0, 10.0],
     ballCol: [1, 0, 0],
     brickHeight: 20,
@@ -115,7 +115,6 @@ var context = {
     bricks: [],
     score: 0,
     level: 0,
-
 };
 
 function update() {
@@ -171,7 +170,7 @@ function update() {
             && xPosBall > (xPosPaddel - xPaddelSizeHalf) && xPosBall < (xPosPaddel + xPaddelSizeHalf)) {
 
 
-            /*
+
             //check wo der Ball auf dem Paddel landet (0.5 ist die Mitte)
             relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
             //check ob der paddel auf der rechten oder der link seite des Paddels landet)
@@ -196,11 +195,11 @@ function update() {
 
             }
             //berechne ballspeed[1] so das die absolute geschwindigkeit gleich bleibt
-            context.ballSpeed[1] = Math.abs(Math.sqrt(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
-            */
+            context.ballSpeed[1] = Math.sqrt(Math.abs(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
 
-            context.ballSpeed[1] = context.ballSpeed[1] * -1;
-    }
+
+            // context.ballSpeed[1] = context.ballSpeed[1] * -1;
+        }
     }
 
 
@@ -249,8 +248,8 @@ function update() {
     context.init = false;
 
     // move ball
-    context.ball[0] += context.ballSpeed[0] * context.level / 2 * -1;
-    context.ball[1] += context.ballSpeed[1] * context.level / 2 * -1;
+    context.ball[0] += context.ballSpeed[0] * (1 + (context.level / 10)) * -1;
+    context.ball[1] += context.ballSpeed[1] * (1 + (context.level / 10)) * -1;
 }
 
 function collideBrick(brickId) {
@@ -304,6 +303,9 @@ function drawBall() {
 
 function drawBricks() {
     if(context.bricks.length === 0) {
+        var direction = Math.random() < 0.5 ? -1 : 1;
+        var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
+        context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 10 / 2)) * -1];
         generateRandomBrickLayers();
         nextLevel();
     }
