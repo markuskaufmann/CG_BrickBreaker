@@ -80,7 +80,7 @@ function drawAnimated(timeStamp) {
     window.requestAnimationFrame(drawAnimated);
 }
 
-/**
+/** 
  * Draw the scene.
  */
 function draw() {
@@ -102,7 +102,7 @@ var context = {
     paddelCol: [1, 1, 1],
     ball: [0, 0],
     ballSpeed: [6, 6],
-    ballSpeedInit: [5, 5],
+    ballSpeedInit: [2, 7],
     ballSize: [10.0, 10.0],
     ballCol: [1, 0, 0],
     brickHeight: 20,
@@ -171,31 +171,38 @@ function update() {
 
 
 
+            c = Math.pow(context.ballSpeed[0], 2) + Math.pow(context.ballSpeed[1], 2);
+            console.log("y: " +context.ballSpeed[0]);
+            console.log("c: " +c);
+
+            console.log("x: " +context.ballSpeed[1]);
+
             //check wo der Ball auf dem Paddel landet (0.5 ist die Mitte)
             relativePos = (((xPosBall+250)/5 - (xPosPaddel+250)/5) + 10 )/ 20; //relative collison to paddel from 0 to 1
             //check ob der paddel auf der rechten oder der link seite des Paddels landet)
-            if (relativePos >= 0.5) {
+            if (relativePos > 0.5) {
                 //check ob ball on links oder von rechts kommt (ist ballSpeed[0] positiv oder negativ?)
-                if (context.ballSpeed[0] > 0) {
-                    context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
-                    console.log("[0]: " + context.ballSpeed[0]);
-                } else {
-                    context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
-                    console.log("[0]: " + context.ballSpeed[0]);
+                if(Math.pow(context.ballSpeed[0] - 2,2) < c) {
+                    context.ballSpeed[0] = context.ballSpeed[0] - 2;
                 }
-            } else {
-
-                if (context.ballSpeed[0] > 0) {
-                    context.ballSpeed[0] = context.ballSpeed[0] + 0.5;
-                    console.log("[0]: " + context.ballSpeed[0]);
-                } else {
-                    context.ballSpeed[0] = context.ballSpeed[0] - 0.5;
-                    console.log("[0]: " + context.ballSpeed[0]);
-                }
-
             }
+            else if (relativePos < 0.5){
+
+
+                if(Math.pow(context.ballSpeed[0] - 2,2) < c) {
+                    context.ballSpeed[0] = context.ballSpeed[0] + 2;
+                }
+            }
+
+
+
             //berechne ballspeed[1] so das die absolute geschwindigkeit gleich bleibt
-            context.ballSpeed[1] = Math.sqrt(Math.abs(context.ballSpeed[1] * context.ballSpeed[1] - (context.ballSpeed[0]) * (context.ballSpeed[0]))) * -1;
+            context.ballSpeed[1] = Math.sqrt(Math.abs(c - Math.pow(context.ballSpeed[0],2))) * -1;
+            console.log("y: " +context.ballSpeed[0]);
+
+            console.log("x: " +context.ballSpeed[1]);
+
+            //   context.ballSpeed[1] = context.ballSpeed[1] * -1;
 
 
             // context.ballSpeed[1] = context.ballSpeed[1] * -1;
@@ -345,7 +352,7 @@ function setInitialParams() {
     var direction = Math.random() < 0.5 ? -1 : 1;
     var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
     context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 10 / 2)) * -1];
-    context.ballSpeed = [direction * context.ballSpeedInit[0], context.ballSpeedInit[1]];
+    context.ballSpeed = [context.ballSpeedInit[0], context.ballSpeedInit[1]];
     context.bricks = [];
 }
 
