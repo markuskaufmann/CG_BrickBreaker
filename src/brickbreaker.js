@@ -80,7 +80,7 @@ function drawAnimated(timeStamp) {
     window.requestAnimationFrame(drawAnimated);
 }
 
-/** 
+/**
  * Draw the scene.
  */
 function draw() {
@@ -310,6 +310,7 @@ function drawBall() {
 
 function drawBricks() {
     if(context.bricks.length === 0) {
+        context.paddelX = 0;
         var direction = Math.random() < 0.5 ? -1 : 1;
         var posOnPaddel = direction * (Math.random() * (context.paddelSize[0] / 2 - context.ballSize[0])).toFixed(1);
         context.ball = [posOnPaddel, ((gl.drawingBufferHeight / 2) - (context.paddelYMargin + context.ballSize[1] + 10 / 2)) * -1];
